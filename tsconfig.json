@@ -1,0 +1,6 @@
+{
+  "extends": "@quorl/ts-config/base",
+  "compilerOptions": {
+    "strictNullChecks": true
+  }
+}

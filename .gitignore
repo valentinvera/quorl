@@ -1,0 +1,103 @@
+# Dependencies and package managers
+node_modules
+.pnp
+.pnp.js
+.pnp.*
+
+/apps/api/.yarn/*
+!/apps/api/.yarn/patches
+!/apps/api/.yarn/plugins
+!/apps/api/.yarn/releases
+!/apps/api/.yarn/versions
+
+/apps/web/.yarn/*
+!/apps/web/.yarn/patches
+!/apps/web/.yarn/plugins
+!/apps/web/.yarn/releases
+!/apps/web/.yarn/versions
+
+# Build outputs and caches
+dist
+build
+out
+dev-dist
+web-build
+target
+*.tsbuildinfo
+.cache
+.turbo
+.nx
+tmp
+temp
+
+# Framework and deployment outputs
+.expo/
+.vinxi/
+.output/
+.tanstack/
+.nitro/
+.vercel
+
+# Generated files
+/apps/web/public/sitemap.xml
+*.db
+*.db-shm
+*.db-wal
+expo-env.d.ts
+uniwind-types.d.ts
+
+# Expo and native credentials
+/apps/mobile/ios/
+/apps/mobile/android/
+.kotlin/
+.metro-health-check*
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.pem
+
+# Environment variables
+.env
+/apps/api/.env*
+/apps/web/.env*
+
+# IDEs and editors
+.idea
+*.swp
+*.swo
+*~
+
+# Operating systems
+.DS_Store
+
+# Logs
+logs
+*.log
+/apps/web/**/*.log*
+_.log
+report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
+npm-debug.log*
+npm-debug.*
+yarn-debug.log*
+yarn-debug.*
+yarn-error.log*
+yarn-error.*
+lerna-debug.log*
+pnpm-debug.log*
+.pnpm-debug.log*
+
+# Testing
+coverage
+.nyc_output
+*.lcov
+test-results
+playwright-report
+blob-report
+.playwright-output
+.playwright-cli
+
+# Miscellaneous
+*.tgz

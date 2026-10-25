@@ -1,0 +1,73 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "ui": "tui",
+  "globalDependencies": [
+    "**/package.json",
+    "**/.env*",
+    "**/tsconfig.json",
+    "bun.lock"
+  ],
+  "globalEnv": [
+    "BETTER_AUTH_SECRET",
+    "BETTER_AUTH_TRUSTED_ORIGINS",
+    "BETTER_AUTH_URL",
+    "CORS_ORIGIN",
+    "DATABASE_AUTH_TOKEN",
+    "DATABASE_URL",
+    "HOST",
+    "PORT",
+    "SITE_URL",
+    "VITE_API_URL",
+    "VITE_HOST",
+    "VITE_PORT",
+    "VITE_PROXY_COOKIE_DOMAIN_REWRITE",
+    "VITE_PROXY_SECURE"
+  ],
+  "globalPassThroughEnv": [
+    "PLAYWRIGHT_API_PORT",
+    "PLAYWRIGHT_API_URL",
+    "PLAYWRIGHT_ARTIFACTS_HOST",
+    "PLAYWRIGHT_ARTIFACTS_PORT",
+    "PLAYWRIGHT_BASE_URL",
+    "PLAYWRIGHT_BRAVE_EXECUTABLE_PATH",
+    "PLAYWRIGHT_BROWSER_EXECUTABLE_PATH",
+    "PLAYWRIGHT_SKIP_WEBSERVER",
+    "PLAYWRIGHT_WEB_PORT"
+  ],
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "outputs": ["dist/**", ".output/**", ".vercel/output/**", "target/**"]
+    },
+    "check-types": {
+      "dependsOn": ["^build"]
+    },
+    "db:generate": {
+      "cache": false
+    },
+    "db:migrate": {
+      "cache": false
+    },
+    "db:migrate:deploy": {
+      "cache": false
+    },
+    "db:push": {
+      "cache": false
+    },
+    "db:studio": {
+      "cache": false,
+      "interactive": true,
+      "persistent": true
+    },
+    "dev": {
+      "cache": false,
+      "dependsOn": ["^build"],
+      "persistent": true
+    },
+    "start": {
+      "cache": false,
+      "persistent": true
+    }
+  }
+}
