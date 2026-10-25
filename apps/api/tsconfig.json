@@ -1,0 +1,10 @@
+{
+  "extends": "@quorl/ts-config/hono-framework",
+  "compilerOptions": {
+    "composite": true,
+    "outDir": "dist",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  }
+}

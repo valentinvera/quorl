@@ -1,0 +1,33 @@
+import { trpcServer } from "@hono/trpc-server"
+import { auth } from "@quorl/auth"
+import { env } from "@quorl/env/api"
+import { createContext } from "@quorl/trpc/context"
+import { appRouter } from "@quorl/trpc/routers/index"
+import { Hono } from "hono"
+import { cors } from "hono/cors"
+
+const app = new Hono()
+
+app.use(
+  "/*",
+  cors({
+    allowHeaders: ["Content-Type", "Authorization"],
+    allowMethods: ["GET", "POST", "OPTIONS"],
+    credentials: true,
+    origin: env.CORS_ORIGIN,
+  })
+)
+
+app.on(["POST", "GET"], "/api/auth/*", (c) => auth.handler(c.req.raw))
+
+app.use(
+  "/trpc/*",
+  trpcServer({
+    createContext: (_opts, context) => createContext({ context }),
+    router: appRouter,
+  })
+)
+
+app.get("/", (c) => c.text("OK"))
+
+export default app
