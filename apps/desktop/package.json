@@ -1,0 +1,12 @@
+{
+  "name": "@quorl/desktop",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "cargo run",
+    "build": "cargo build",
+    "start": "cargo run --release",
+    "check-types": "cargo check",
+    "format": "cargo fmt"
+  }
+}
