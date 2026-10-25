@@ -1,0 +1,4 @@
+interface:
+  display_name: "Quorl Design"
+  short_description: "Brand and design guidance for Quorl."
+  default_prompt: "Use Quorl brand and design guidelines for this task."
