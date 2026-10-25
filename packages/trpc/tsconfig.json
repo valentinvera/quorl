@@ -1,0 +1,4 @@
+{
+  "extends": "@quorl/ts-config/hono-framework",
+  "include": ["src/**/*.ts"]
+}

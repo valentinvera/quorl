@@ -1,0 +1,42 @@
+{
+  "name": "@quorl/trpc",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs",
+      "default": "./dist/index.mjs"
+    },
+    "./context": {
+      "types": "./dist/context.d.mts",
+      "import": "./dist/context.mjs",
+      "default": "./dist/context.mjs"
+    },
+    "./routers/*": {
+      "types": "./dist/routers/*.d.mts",
+      "import": "./dist/routers/*.mjs",
+      "default": "./dist/routers/*.mjs"
+    }
+  },
+  "scripts": {
+    "build": "tsdown",
+    "check-types": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@quorl/auth": "workspace:*",
+    "@quorl/db": "workspace:*",
+    "@quorl/env": "workspace:*",
+    "@trpc/client": "catalog:",
+    "@trpc/server": "catalog:",
+    "dotenv": "catalog:",
+    "hono": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@quorl/ts-config": "workspace:*",
+    "typescript": "catalog:"
+  }
+}
