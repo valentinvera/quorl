@@ -1,0 +1,12 @@
+{
+  "extends": "@quorl/ts-config/react-library",
+  "compilerOptions": {
+    "types": [],
+    "paths": {
+      "@quorl/*": ["./src/*"],
+      "@quorl/ui/*": ["./src/*"]
+    },
+    "strictNullChecks": true
+  },
+  "include": ["src/**/*.ts", "src/**/*.tsx"]
+}
