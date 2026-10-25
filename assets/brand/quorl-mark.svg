@@ -1,0 +1,28 @@
+<svg
+  aria-labelledby="quorl-mark-title quorl-mark-description"
+  role="img"
+  viewBox="0 0 512 512"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <title id="quorl-mark-title">Quorl</title>
+  <desc id="quorl-mark-description">
+    A friendly lowercase q-shaped AI teammate with two eyes.
+  </desc>
+
+  <defs>
+    <path
+      d="M124 52C72 52 40 82 40 132V286C40 344 79 380 140 380H246C271 380 289 389 306 407L355 461C376 484 413 486 437 465C462 443 464 405 440 379L382 315C366 298 361 277 365 252C368 236 370 219 370 199V132C370 82 338 52 286 52H124Z"
+      id="quorl-body"
+    />
+    <mask id="quorl-face-cutouts">
+      <rect fill="black" height="512" width="512" />
+      <use fill="white" href="#quorl-body" />
+      <rect fill="black" height="100" rx="24" width="48" x="128" y="142" />
+      <rect fill="black" height="100" rx="24" width="48" x="232" y="142" />
+    </mask>
+  </defs>
+
+  <g mask="url(#quorl-face-cutouts)">
+    <use fill="#FFFFFF" href="#quorl-body" />
+  </g>
+</svg>
