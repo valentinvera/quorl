@@ -1,3 +1,4 @@
+import type { AgentTemplate } from "@quorl/agents"
 import { Button } from "@quorl/ui/components/button"
 import { Input } from "@quorl/ui/components/input"
 import { Label } from "@quorl/ui/components/label"
@@ -5,7 +6,6 @@ import { Textarea } from "@quorl/ui/components/textarea"
 import { useForm, useStore } from "@tanstack/react-form"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { type ChangeEvent, type FormEvent, useCallback } from "react"
-import type { AgentTemplate } from "@/lib/agent-templates"
 import { useTRPC } from "@/utils/trpc"
 
 const DESCRIPTION_LIMIT = 280

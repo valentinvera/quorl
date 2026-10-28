@@ -1,3 +1,4 @@
+import { type AgentTemplate, agentTemplates } from "@quorl/agents"
 import { Button } from "@quorl/ui/components/button"
 import {
   Empty,
@@ -10,7 +11,6 @@ import { useQuery } from "@tanstack/react-query"
 import { Link } from "@tanstack/react-router"
 import { useCallback, useState } from "react"
 import { CreateAgentForm } from "@/components/create-agent-form"
-import { type AgentTemplate, agentTemplates } from "@/lib/agent-templates"
 import { useTRPC } from "@/utils/trpc"
 
 interface TemplateRowProps {

@@ -61,6 +61,7 @@
         "@expo/metro-runtime": "~57.0.12",
         "@expo/vector-icons": "^15.1.1",
         "@gorhom/bottom-sheet": "^5.2.14",
+        "@quorl/agents": "workspace:*",
         "@quorl/env": "workspace:*",
         "@quorl/tokens": "workspace:*",
         "@quorl/trpc": "workspace:*",
@@ -113,6 +114,7 @@
       "name": "@quorl/web",
       "version": "0.0.0",
       "dependencies": {
+        "@quorl/agents": "workspace:*",
         "@quorl/env": "workspace:*",
         "@quorl/trpc": "workspace:*",
         "@quorl/ui": "workspace:*",
@@ -147,6 +149,15 @@
         "typescript": "catalog:",
         "vite": "^8.1.5",
         "web-vitals": "^6.0.1",
+      },
+    },
+    "packages/agents": {
+      "name": "@quorl/agents",
+      "version": "0.0.0",
+      "devDependencies": {
+        "@quorl/ts-config": "workspace:*",
+        "tsdown": "^0.22.14",
+        "typescript": "catalog:",
       },
     },
     "packages/auth": {
@@ -827,6 +838,8 @@
     "@playwright/test": ["@playwright/test@1.62.1", "", { "dependencies": { "playwright": "1.62.1" }, "bin": { "playwright": "cli.js" } }, "sha512-DTcUc8qii+cpHvtOwggMtBRMjKZHXYWdw8syRYu2vtzuq4Wxphqq4NfCs5Zt44L6mA8rfDfj+PHnxFc/FeK6mQ=="],
 
     "@quansync/fs": ["@quansync/fs@1.0.0", "", { "dependencies": { "quansync": "^1.0.0" } }, "sha512-4TJ3DFtlf1L5LDMaM6CanJ/0lckGNtJcMjQ1NAV6zDmA0tEHKZtxNKin8EgPaVX1YzljbxckyT2tJrpQKAtngQ=="],
+
+    "@quorl/agents": ["@quorl/agents@workspace:packages/agents"],
 
     "@quorl/api": ["@quorl/api@workspace:apps/api"],
 

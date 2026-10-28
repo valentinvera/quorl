@@ -12,6 +12,7 @@
     "sitemap": "bun run ../../scripts/generate-sitemap.mjs"
   },
   "dependencies": {
+    "@quorl/agents": "workspace:*",
     "@quorl/trpc": "workspace:*",
     "@quorl/env": "workspace:*",
     "@quorl/ui": "workspace:*",
