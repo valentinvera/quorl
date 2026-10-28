@@ -11,6 +11,7 @@ import { HeroUINativeProvider } from "heroui-native"
 import { useEffect } from "react"
 import { GestureHandlerRootView } from "react-native-gesture-handler"
 import { KeyboardProvider } from "react-native-keyboard-controller"
+import { SafeAreaProvider } from "react-native-safe-area-context"
 import { AppThemeProvider } from "@/contexts/app-theme-context"
 import { queryClient } from "@/utils/trpc"
 
@@ -35,18 +36,20 @@ export default function Layout() {
   }
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <GestureHandlerRootView style={{ flex: 1 }}>
-        <KeyboardProvider>
-          <AppThemeProvider>
-            <HeroUINativeProvider
-              config={{ devInfo: { stylingPrinciples: false } }}
-            >
-              <Stack screenOptions={{ headerShown: false }} />
-            </HeroUINativeProvider>
-          </AppThemeProvider>
-        </KeyboardProvider>
-      </GestureHandlerRootView>
-    </QueryClientProvider>
+    <SafeAreaProvider>
+      <QueryClientProvider client={queryClient}>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <KeyboardProvider>
+            <AppThemeProvider>
+              <HeroUINativeProvider
+                config={{ devInfo: { stylingPrinciples: false } }}
+              >
+                <Stack screenOptions={{ headerShown: false }} />
+              </HeroUINativeProvider>
+            </AppThemeProvider>
+          </KeyboardProvider>
+        </GestureHandlerRootView>
+      </QueryClientProvider>
+    </SafeAreaProvider>
   )
 }
