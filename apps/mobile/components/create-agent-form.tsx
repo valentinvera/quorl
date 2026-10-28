@@ -1,3 +1,4 @@
+import type { AgentTemplate } from "@quorl/agents"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { Button, FieldError, Input, Label, TextField } from "heroui-native"
 import { useCallback, useState } from "react"
@@ -10,6 +11,7 @@ const INSTRUCTIONS_LIMIT = 2000
 interface CreateAgentFormProps {
   onCancel: () => void
   onCreated: () => void
+  template?: AgentTemplate
 }
 
 interface FieldErrors {
@@ -50,12 +52,16 @@ function validateFields(
   return errors
 }
 
-export function CreateAgentForm({ onCancel, onCreated }: CreateAgentFormProps) {
+export function CreateAgentForm({
+  onCancel,
+  onCreated,
+  template,
+}: CreateAgentFormProps) {
   const queryClient = useQueryClient()
   const [name, setName] = useState("")
-  const [role, setRole] = useState("")
-  const [description, setDescription] = useState("")
-  const [instructions, setInstructions] = useState("")
+  const [role, setRole] = useState(template?.role ?? "")
+  const [description, setDescription] = useState(template?.description ?? "")
+  const [instructions, setInstructions] = useState(template?.instructions ?? "")
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({})
 
   const createAgent = useMutation(
@@ -106,6 +112,12 @@ export function CreateAgentForm({ onCancel, onCreated }: CreateAgentFormProps) {
 
   return (
     <View className="gap-4 border border-border p-4">
+      {template ? (
+        <Text className="text-caption text-muted-foreground">
+          From template: {template.role}
+        </Text>
+      ) : null}
+
       <TextField isInvalid={Boolean(fieldErrors.name)}>
         <Label>Name</Label>
         <Input

@@ -1,3 +1,4 @@
+import { type AgentTemplate, agentTemplates } from "@quorl/agents"
 import { useQuery } from "@tanstack/react-query"
 import { useRouter } from "expo-router"
 import { Button } from "heroui-native"
@@ -46,14 +47,51 @@ function AgentRow({ agent }: AgentRowProps) {
   )
 }
 
+interface TemplateRowProps {
+  onSelect: (template: AgentTemplate) => void
+  template: AgentTemplate
+}
+
+function TemplateRow({ onSelect, template }: TemplateRowProps) {
+  const handlePress = useCallback(() => {
+    onSelect(template)
+  }, [onSelect, template])
+
+  return (
+    <Pressable
+      accessibilityRole="button"
+      className="gap-1 py-3"
+      onPress={handlePress}
+    >
+      <Text className="font-geist-semibold text-foreground text-medium">
+        {template.role}
+      </Text>
+      <Text className="text-muted-foreground text-small">
+        {template.description}
+      </Text>
+    </Pressable>
+  )
+}
+
 export function AgentRoster() {
   const [isCreating, setIsCreating] = useState(false)
+  const [template, setTemplate] = useState<AgentTemplate | null>(null)
 
   const agentsQuery = useQuery(trpc.agent.list.queryOptions())
   const agents = agentsQuery.data
 
-  const openForm = useCallback(() => setIsCreating(true), [])
-  const closeForm = useCallback(() => setIsCreating(false), [])
+  const openForm = useCallback(() => {
+    setTemplate(null)
+    setIsCreating(true)
+  }, [])
+  const openTemplate = useCallback((nextTemplate: AgentTemplate) => {
+    setTemplate(nextTemplate)
+    setIsCreating(true)
+  }, [])
+  const closeForm = useCallback(() => {
+    setTemplate(null)
+    setIsCreating(false)
+  }, [])
 
   return (
     <View className="gap-8">
@@ -70,7 +108,11 @@ export function AgentRoster() {
       </View>
 
       {isCreating ? (
-        <CreateAgentForm onCancel={closeForm} onCreated={closeForm} />
+        <CreateAgentForm
+          onCancel={closeForm}
+          onCreated={closeForm}
+          template={template ?? undefined}
+        />
       ) : (
         <Button onPress={openForm} variant="outline">
           <Button.Label>New teammate</Button.Label>
@@ -92,7 +134,7 @@ export function AgentRoster() {
       {agents?.length === 0 ? (
         <View>
           <View className="bg-border" style={{ height: 1 }} />
-          <View className="items-center gap-2 py-12">
+          <View className="items-center gap-2 py-8">
             <Text className="font-geist-semibold text-foreground text-medium">
               No teammates yet
             </Text>
@@ -101,6 +143,28 @@ export function AgentRoster() {
               complete.
             </Text>
           </View>
+
+          {isCreating ? null : (
+            <>
+              <View className="bg-border" style={{ height: 1 }} />
+              <View className="gap-3 py-6">
+                <Text className="text-caption text-muted-foreground">
+                  Start with a template
+                </Text>
+                <View>
+                  {agentTemplates.map((agentTemplate) => (
+                    <View key={agentTemplate.id}>
+                      <View className="bg-border" style={{ height: 1 }} />
+                      <TemplateRow
+                        onSelect={openTemplate}
+                        template={agentTemplate}
+                      />
+                    </View>
+                  ))}
+                </View>
+              </View>
+            </>
+          )}
         </View>
       ) : null}
 
