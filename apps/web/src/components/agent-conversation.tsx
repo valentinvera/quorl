@@ -25,6 +25,17 @@ import { useTRPC } from "@/utils/trpc"
 
 const MAX_MESSAGE_LENGTH = 4000
 
+const messageTimeFormatter = new Intl.DateTimeFormat(undefined, {
+  hour: "numeric",
+  minute: "2-digit",
+})
+
+function formatMessageTime(value: string): string {
+  const date = new Date(value)
+
+  return Number.isNaN(date.getTime()) ? "" : messageTimeFormatter.format(date)
+}
+
 interface AgentConversationProps {
   agentId: string
 }
@@ -292,6 +303,12 @@ export function AgentConversation({ agentId }: AgentConversationProps) {
                       {message.content}
                     </BubbleContent>
                   </Bubble>
+                  <time
+                    className="self-end text-caption text-muted-foreground"
+                    dateTime={message.createdAt}
+                  >
+                    {formatMessageTime(message.createdAt)}
+                  </time>
                 </MessageContent>
               </Message>
             ))}
