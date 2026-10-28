@@ -20,6 +20,7 @@ import {
   useRef,
   useState,
 } from "react"
+import { EditAgentForm } from "@/components/edit-agent-form"
 import { useTRPC } from "@/utils/trpc"
 
 const MAX_MESSAGE_LENGTH = 4000
@@ -32,6 +33,7 @@ export function AgentConversation({ agentId }: AgentConversationProps) {
   const trpc = useTRPC()
   const queryClient = useQueryClient()
   const [content, setContent] = useState("")
+  const [isEditing, setIsEditing] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement | null>(null)
 
   const agentQuery = useQuery(trpc.agent.get.queryOptions({ id: agentId }))
@@ -97,6 +99,9 @@ export function AgentConversation({ agentId }: AgentConversationProps) {
     [submitMessage]
   )
 
+  const startEditing = useCallback(() => setIsEditing(true), [])
+  const stopEditing = useCallback(() => setIsEditing(false), [])
+
   if (agentQuery.error) {
     return (
       <div className="mx-auto w-full max-w-3xl px-6 py-10">
@@ -150,12 +155,35 @@ export function AgentConversation({ agentId }: AgentConversationProps) {
           <ArrowLeftIcon className="size-3.5" />
           Teammates
         </Link>
-        <h1 className="mt-3 font-medium text-section">{agent.name}</h1>
-        <p className="mt-1 text-muted-foreground text-small">{agent.role}</p>
-        {agent.description ? (
-          <p className="mt-2 text-body text-muted-foreground">
-            {agent.description}
-          </p>
+        <div className="mt-3 flex items-start justify-between gap-4">
+          <div className="min-w-0">
+            <h1 className="font-medium text-section">{agent.name}</h1>
+            <p className="mt-1 text-muted-foreground text-small">
+              {agent.role}
+            </p>
+            {agent.description ? (
+              <p className="mt-2 text-body text-muted-foreground">
+                {agent.description}
+              </p>
+            ) : null}
+          </div>
+          {isEditing ? null : (
+            <Button
+              onClick={startEditing}
+              size="sm"
+              type="button"
+              variant="outline"
+            >
+              Edit
+            </Button>
+          )}
+        </div>
+        {isEditing ? (
+          <EditAgentForm
+            agent={agent}
+            onCancel={stopEditing}
+            onSaved={stopEditing}
+          />
         ) : null}
       </div>
 
