@@ -8,6 +8,7 @@ import { protectedProcedure, router } from "../index"
 
 const agentInput = z.object({
   description: z.string().trim().max(280).optional(),
+  instructions: z.string().trim().max(2000).optional(),
   name: z.string().trim().min(1).max(80),
   role: z.string().trim().min(1).max(80),
 })
@@ -21,6 +22,7 @@ export const agentRouter = router({
         .values({
           description: input.description || null,
           id: randomUUID(),
+          instructions: input.instructions || null,
           name: input.name,
           role: input.role,
           userId: ctx.session.user.id,
@@ -28,6 +30,7 @@ export const agentRouter = router({
         .returning({
           description: agent.description,
           id: agent.id,
+          instructions: agent.instructions,
           name: agent.name,
           role: agent.role,
         })
@@ -62,6 +65,7 @@ export const agentRouter = router({
         .select({
           description: agent.description,
           id: agent.id,
+          instructions: agent.instructions,
           name: agent.name,
           role: agent.role,
         })
@@ -80,6 +84,7 @@ export const agentRouter = router({
         .select({
           description: agent.description,
           id: agent.id,
+          instructions: agent.instructions,
           name: agent.name,
           role: agent.role,
         })
@@ -95,6 +100,7 @@ export const agentRouter = router({
         .update(agent)
         .set({
           description: input.description || null,
+          instructions: input.instructions || null,
           name: input.name,
           role: input.role,
         })
@@ -104,6 +110,7 @@ export const agentRouter = router({
         .returning({
           description: agent.description,
           id: agent.id,
+          instructions: agent.instructions,
           name: agent.name,
           role: agent.role,
         })
