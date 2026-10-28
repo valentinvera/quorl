@@ -8,6 +8,7 @@ import { type ChangeEvent, type FormEvent, useCallback } from "react"
 import { useTRPC } from "@/utils/trpc"
 
 const DESCRIPTION_LIMIT = 280
+const INSTRUCTIONS_LIMIT = 2000
 
 interface CreateAgentFormProps {
   onCancel: () => void
@@ -31,12 +32,14 @@ export function CreateAgentForm({ onCancel, onCreated }: CreateAgentFormProps) {
   const form = useForm({
     defaultValues: {
       description: "",
+      instructions: "",
       name: "",
       role: "",
     },
     onSubmit: ({ value }) => {
       mutate({
         description: value.description.trim() || undefined,
+        instructions: value.instructions.trim() || undefined,
         name: value.name,
         role: value.role,
       })
@@ -72,6 +75,13 @@ export function CreateAgentForm({ onCancel, onCreated }: CreateAgentFormProps) {
   const handleDescriptionChange = useCallback(
     (event: ChangeEvent<HTMLTextAreaElement>) => {
       form.setFieldValue("description", event.target.value)
+    },
+    [form]
+  )
+
+  const handleInstructionsChange = useCallback(
+    (event: ChangeEvent<HTMLTextAreaElement>) => {
+      form.setFieldValue("instructions", event.target.value)
     },
     [form]
   )
@@ -198,6 +208,44 @@ export function CreateAgentForm({ onCancel, onCreated }: CreateAgentFormProps) {
               <p
                 className="text-caption text-destructive-foreground"
                 id="agent-description-error"
+              >
+                {field.state.meta.errors[0]}
+              </p>
+            ) : null}
+          </div>
+        )}
+      </form.Field>
+
+      <form.Field
+        name="instructions"
+        validators={{
+          onSubmit: ({ value }) =>
+            value.length <= INSTRUCTIONS_LIMIT
+              ? undefined
+              : `Use ${INSTRUCTIONS_LIMIT} characters or fewer.`,
+        }}
+      >
+        {(field) => (
+          <div className="mt-4 flex flex-col gap-2">
+            <Label htmlFor={field.name}>Instructions</Label>
+            <Textarea
+              aria-describedby={
+                field.state.meta.errors[0]
+                  ? "agent-instructions-error"
+                  : undefined
+              }
+              aria-invalid={field.state.meta.errors.length > 0}
+              id={field.name}
+              name={field.name}
+              onBlur={field.handleBlur}
+              onChange={handleInstructionsChange}
+              placeholder="Always cite sources and keep briefs under one page."
+              value={field.state.value}
+            />
+            {field.state.meta.errors[0] ? (
+              <p
+                className="text-caption text-destructive-foreground"
+                id="agent-instructions-error"
               >
                 {field.state.meta.errors[0]}
               </p>
