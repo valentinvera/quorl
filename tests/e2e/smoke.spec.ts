@@ -5,7 +5,7 @@ const LOGIN_URL_PATTERN = /\/login$/
 const ATLAS_LINK_PATTERN = /Atlas/
 const RESEARCH_TEMPLATE_PATTERN = /Research analyst/
 
-test("signs up, delegates, edits, deletes the teammate, and reaches the API", async ({
+test("signs up, delegates, edits, duplicates, deletes teammates, and reaches the API", async ({
   page,
   request,
 }, testInfo) => {
@@ -104,7 +104,17 @@ test("signs up, delegates, edits, deletes the teammate, and reaches the API", as
     page.getByText("Prepare the weekly research brief.")
   ).toBeVisible()
 
-  await page.getByRole("link", { name: "Teammates" }).click()
+  await page.getByRole("button", { name: "Duplicate" }).click()
+  await expect(
+    page.getByRole("heading", { level: 1, name: "Atlas Prime copy" })
+  ).toBeVisible()
+  await expect(
+    page.getByText("Cite sources and lead with the recommendation.")
+  ).toBeVisible()
+
+  await page.getByRole("button", { exact: true, name: "Delete" }).click()
+  await expect(page.getByText("Delete Atlas Prime copy?")).toBeVisible()
+  await page.getByRole("button", { name: "Delete teammate" }).click()
   await expect(page.getByRole("heading", { name: "Teammates" })).toBeVisible()
   await expect(page.getByText("Atlas Prime")).toBeVisible()
 
