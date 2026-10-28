@@ -56,6 +56,9 @@ test("signs up, delegates, edits, deletes the teammate, and reaches the API", as
   await page
     .getByLabel("Description")
     .fill("Finds sources and prepares the weekly research brief.")
+  await page
+    .getByLabel("Instructions")
+    .fill("Always cite sources and keep briefs under one page.")
   await page.getByRole("button", { name: "Create teammate" }).click()
 
   await expect(page.getByText("Atlas")).toBeVisible()
@@ -66,6 +69,9 @@ test("signs up, delegates, edits, deletes the teammate, and reaches the API", as
     page.getByRole("heading", { level: 1, name: "Atlas" })
   ).toBeVisible()
   await expect(page.getByText("Give Atlas a task")).toBeVisible()
+  await expect(
+    page.getByText("Always cite sources and keep briefs under one page.")
+  ).toBeVisible()
 
   await page
     .getByPlaceholder("Message Atlas...")
@@ -81,11 +87,17 @@ test("signs up, delegates, edits, deletes the teammate, and reaches the API", as
   await page
     .getByLabel("Description")
     .fill("Leads research and prepares the weekly brief.")
+  await page
+    .getByLabel("Instructions")
+    .fill("Cite sources and lead with the recommendation.")
   await page.getByRole("button", { name: "Save changes" }).click()
   await expect(
     page.getByRole("heading", { level: 1, name: "Atlas Prime" })
   ).toBeVisible()
   await expect(page.getByText("Research lead")).toBeVisible()
+  await expect(
+    page.getByText("Cite sources and lead with the recommendation.")
+  ).toBeVisible()
   await expect(
     page.getByText("Prepare the weekly research brief.")
   ).toBeVisible()
@@ -107,6 +119,9 @@ test("signs up, delegates, edits, deletes the teammate, and reaches the API", as
   await page.getByRole("link", { name: ATLAS_LINK_PATTERN }).click()
   await expect(
     page.getByRole("heading", { level: 1, name: "Atlas Prime" })
+  ).toBeVisible()
+  await expect(
+    page.getByText("Cite sources and lead with the recommendation.")
   ).toBeVisible()
   await expect(
     page.getByText("Prepare the weekly research brief.")
