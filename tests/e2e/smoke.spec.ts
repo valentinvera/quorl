@@ -4,7 +4,7 @@ const HEALTH_CHECK_PATH = "/trpc/healthCheck?batch=1&input=%7B%7D"
 const LOGIN_URL_PATTERN = /\/login$/
 const ATLAS_LINK_PATTERN = /Atlas/
 
-test("signs up, delegates a message, and reaches the API", async ({
+test("signs up, delegates a message, edits the teammate, and reaches the API", async ({
   page,
   request,
 }, testInfo) => {
@@ -75,8 +75,24 @@ test("signs up, delegates a message, and reaches the API", async ({
     page.getByText("Prepare the weekly research brief.")
   ).toBeVisible()
 
+  await page.getByRole("button", { name: "Edit" }).click()
+  await page.getByLabel("Name").fill("Atlas Prime")
+  await page.getByLabel("Role").fill("Research lead")
+  await page
+    .getByLabel("Description")
+    .fill("Leads research and prepares the weekly brief.")
+  await page.getByRole("button", { name: "Save changes" }).click()
+  await expect(
+    page.getByRole("heading", { level: 1, name: "Atlas Prime" })
+  ).toBeVisible()
+  await expect(page.getByText("Research lead")).toBeVisible()
+  await expect(
+    page.getByText("Prepare the weekly research brief.")
+  ).toBeVisible()
+
   await page.getByRole("link", { name: "Teammates" }).click()
   await expect(page.getByRole("heading", { name: "Teammates" })).toBeVisible()
+  await expect(page.getByText("Atlas Prime")).toBeVisible()
 
   await page.getByRole("button", { name: "Sign out" }).click()
   await expect(
@@ -89,6 +105,9 @@ test("signs up, delegates a message, and reaches the API", async ({
   await expect(page.getByRole("heading", { name: "Teammates" })).toBeVisible()
 
   await page.getByRole("link", { name: ATLAS_LINK_PATTERN }).click()
+  await expect(
+    page.getByRole("heading", { level: 1, name: "Atlas Prime" })
+  ).toBeVisible()
   await expect(
     page.getByText("Prepare the weekly research brief.")
   ).toBeVisible()
