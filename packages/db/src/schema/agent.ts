@@ -10,6 +10,7 @@ export const agent = sqliteTable(
       .notNull(),
     description: text("description"),
     id: text("id").primaryKey(),
+    instructions: text("instructions"),
     name: text("name").notNull(),
     role: text("role").notNull(),
     updatedAt: integer("updated_at", { mode: "timestamp_ms" })
