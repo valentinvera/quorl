@@ -15,6 +15,13 @@
       "when": 1793168646541,
       "tag": "0001_clumsy_warbound",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1793212210505,
+      "tag": "0002_early_skrulls",
+      "breakpoints": true
     }
   ]
 }

@@ -7,6 +7,7 @@ import {
 } from "@quorl/ui/components/empty"
 import { Skeleton } from "@quorl/ui/components/skeleton"
 import { useQuery } from "@tanstack/react-query"
+import { Link } from "@tanstack/react-router"
 import { useCallback, useState } from "react"
 import { CreateAgentForm } from "@/components/create-agent-form"
 import { useTRPC } from "@/utils/trpc"
@@ -73,21 +74,24 @@ export function AgentRoster() {
       {agents && agents.length > 0 ? (
         <ul className="mt-8 divide-y divide-border border-border border-t">
           {agents.map((agent) => (
-            <li
-              className="flex flex-col gap-1 py-4 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6"
-              key={agent.id}
-            >
-              <div className="min-w-0">
-                <h2 className="font-medium text-medium">{agent.name}</h2>
-                {agent.description ? (
-                  <p className="mt-1 text-muted-foreground text-small">
-                    {agent.description}
-                  </p>
-                ) : null}
-              </div>
-              <span className="shrink-0 text-caption text-muted-foreground">
-                {agent.role}
-              </span>
+            <li key={agent.id}>
+              <Link
+                className="-mx-3 flex flex-col gap-1 px-3 py-4 transition-colors hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring/50 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6"
+                params={{ agentId: agent.id }}
+                to="/agents/$agentId"
+              >
+                <div className="min-w-0">
+                  <h2 className="font-medium text-medium">{agent.name}</h2>
+                  {agent.description ? (
+                    <p className="mt-1 text-muted-foreground text-small">
+                      {agent.description}
+                    </p>
+                  ) : null}
+                </div>
+                <span className="shrink-0 text-caption text-muted-foreground">
+                  {agent.role}
+                </span>
+              </Link>
             </li>
           ))}
         </ul>
