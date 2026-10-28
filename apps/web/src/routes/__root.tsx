@@ -7,6 +7,7 @@ import {
   Scripts,
 } from "@tanstack/react-router"
 import type { TRPCOptionsProxy } from "@trpc/tanstack-react-query"
+import { useEffect } from "react"
 import globalsCss from "../styles/globals.css?url"
 
 export interface RouterAppContext {
@@ -40,6 +41,10 @@ export const Route = createRootRouteWithContext<RouterAppContext>()({
 })
 
 function RootDocument() {
+  useEffect(() => {
+    document.documentElement.dataset.hydrated = "true"
+  }, [])
+
   return (
     <html className="dark" lang="en" suppressHydrationWarning>
       <head>
