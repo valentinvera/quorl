@@ -33,7 +33,7 @@ const trpcClient = createTRPCClient<AppRouter>({
         }
         return Object.fromEntries(headers)
       },
-      url: `${env.EXPO_PUBLIC_API_URL}/api/trpc`,
+      url: `${env.EXPO_PUBLIC_API_URL.replace(/\/$/, "")}/trpc`,
     }),
   ],
 })
