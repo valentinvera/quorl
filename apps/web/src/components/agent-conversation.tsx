@@ -9,7 +9,7 @@ import {
 import { Message, MessageContent } from "@quorl/ui/components/message"
 import { Textarea } from "@quorl/ui/components/textarea"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { Link } from "@tanstack/react-router"
+import { Link, useNavigate } from "@tanstack/react-router"
 import { ArrowLeftIcon, SendIcon } from "lucide-react"
 import {
   type ChangeEvent,
@@ -32,12 +32,28 @@ interface AgentConversationProps {
 export function AgentConversation({ agentId }: AgentConversationProps) {
   const trpc = useTRPC()
   const queryClient = useQueryClient()
+  const navigate = useNavigate()
   const [content, setContent] = useState("")
   const [isEditing, setIsEditing] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement | null>(null)
 
   const agentQuery = useQuery(trpc.agent.get.queryOptions({ id: agentId }))
   const messagesQuery = useQuery(trpc.message.list.queryOptions({ agentId }))
+
+  const deleteAgent = useMutation(
+    trpc.agent.delete.mutationOptions({
+      onSuccess: async () => {
+        await queryClient.invalidateQueries(trpc.agent.list.queryFilter())
+        await navigate({ to: "/" })
+      },
+    })
+  )
+  const {
+    error: deleteError,
+    isPending: isDeletingPending,
+    mutate: deleteAgentMutation,
+  } = deleteAgent
 
   const sendMessage = useMutation(
     trpc.message.send.mutationOptions({
@@ -99,8 +115,19 @@ export function AgentConversation({ agentId }: AgentConversationProps) {
     [submitMessage]
   )
 
-  const startEditing = useCallback(() => setIsEditing(true), [])
+  const startEditing = useCallback(() => {
+    setIsDeleting(false)
+    setIsEditing(true)
+  }, [])
   const stopEditing = useCallback(() => setIsEditing(false), [])
+  const startDeleting = useCallback(() => {
+    setIsEditing(false)
+    setIsDeleting(true)
+  }, [])
+  const stopDeleting = useCallback(() => setIsDeleting(false), [])
+  const confirmDelete = useCallback(() => {
+    deleteAgentMutation({ id: agentId })
+  }, [agentId, deleteAgentMutation])
 
   if (agentQuery.error) {
     return (
@@ -167,15 +194,26 @@ export function AgentConversation({ agentId }: AgentConversationProps) {
               </p>
             ) : null}
           </div>
-          {isEditing ? null : (
-            <Button
-              onClick={startEditing}
-              size="sm"
-              type="button"
-              variant="outline"
-            >
-              Edit
-            </Button>
+          {isEditing || isDeleting ? null : (
+            <div className="flex items-center gap-2">
+              <Button
+                onClick={startEditing}
+                size="sm"
+                type="button"
+                variant="outline"
+              >
+                Edit
+              </Button>
+              <Button
+                className="text-destructive-foreground"
+                onClick={startDeleting}
+                size="sm"
+                type="button"
+                variant="ghost"
+              >
+                Delete
+              </Button>
+            </div>
           )}
         </div>
         {isEditing ? (
@@ -184,6 +222,43 @@ export function AgentConversation({ agentId }: AgentConversationProps) {
             onCancel={stopEditing}
             onSaved={stopEditing}
           />
+        ) : null}
+        {isDeleting ? (
+          <div className="mt-4 border border-destructive/40 p-4">
+            <p className="font-medium text-medium">Delete {agent.name}?</p>
+            <p className="mt-1 text-muted-foreground text-small">
+              This removes the teammate and its messages. This cannot be undone.
+            </p>
+            {deleteError ? (
+              <p
+                className="mt-2 text-destructive-foreground text-small"
+                role="alert"
+              >
+                {deleteError.message}
+              </p>
+            ) : null}
+            <div className="mt-4 flex items-center justify-end gap-2">
+              <Button
+                disabled={isDeletingPending}
+                onClick={stopDeleting}
+                size="sm"
+                type="button"
+                variant="ghost"
+              >
+                Cancel
+              </Button>
+              <Button
+                className="text-destructive-foreground"
+                disabled={isDeletingPending}
+                onClick={confirmDelete}
+                size="sm"
+                type="button"
+                variant="destructive"
+              >
+                {isDeletingPending ? "Deleting..." : "Delete teammate"}
+              </Button>
+            </div>
+          </div>
         ) : null}
       </div>
 

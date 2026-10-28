@@ -35,6 +35,26 @@ export const agentRouter = router({
       return created
     }),
 
+  delete: protectedProcedure
+    .input(z.object({ id: z.string().min(1) }))
+    .mutation(async ({ ctx, input }) => {
+      const [deleted] = await db
+        .delete(agent)
+        .where(
+          and(eq(agent.id, input.id), eq(agent.userId, ctx.session.user.id))
+        )
+        .returning({ id: agent.id })
+
+      if (!deleted) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Teammate not found.",
+        })
+      }
+
+      return deleted
+    }),
+
   get: protectedProcedure
     .input(z.object({ id: z.string().min(1) }))
     .query(async ({ ctx, input }) => {
