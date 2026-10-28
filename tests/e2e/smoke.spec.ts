@@ -4,7 +4,7 @@ const HEALTH_CHECK_PATH = "/trpc/healthCheck?batch=1&input=%7B%7D"
 const LOGIN_URL_PATTERN = /\/login$/
 const ATLAS_LINK_PATTERN = /Atlas/
 
-test("signs up, delegates a message, edits the teammate, and reaches the API", async ({
+test("signs up, delegates, edits, deletes the teammate, and reaches the API", async ({
   page,
   request,
 }, testInfo) => {
@@ -111,6 +111,12 @@ test("signs up, delegates a message, edits the teammate, and reaches the API", a
   await expect(
     page.getByText("Prepare the weekly research brief.")
   ).toBeVisible()
+
+  await page.getByRole("button", { exact: true, name: "Delete" }).click()
+  await expect(page.getByText("Delete Atlas Prime?")).toBeVisible()
+  await page.getByRole("button", { name: "Delete teammate" }).click()
+  await expect(page.getByRole("heading", { name: "Teammates" })).toBeVisible()
+  await expect(page.getByText("No teammates yet")).toBeVisible()
 
   const response = await request.get(`${apiBaseUrl}${HEALTH_CHECK_PATH}`)
 
