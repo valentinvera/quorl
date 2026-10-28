@@ -14,23 +14,28 @@ const sendInput = agentIdInput.extend({
 })
 
 export const messageRouter = router({
-  list: protectedProcedure.input(agentIdInput).query(
-    async ({ ctx, input }) =>
-      await db
-        .select({
-          content: message.content,
-          id: message.id,
-          role: message.role,
-        })
-        .from(message)
-        .where(
-          and(
-            eq(message.agentId, input.agentId),
-            eq(message.userId, ctx.session.user.id)
-          )
+  list: protectedProcedure.input(agentIdInput).query(async ({ ctx, input }) => {
+    const rows = await db
+      .select({
+        content: message.content,
+        createdAt: message.createdAt,
+        id: message.id,
+        role: message.role,
+      })
+      .from(message)
+      .where(
+        and(
+          eq(message.agentId, input.agentId),
+          eq(message.userId, ctx.session.user.id)
         )
-        .orderBy(asc(message.createdAt))
-  ),
+      )
+      .orderBy(asc(message.createdAt))
+
+    return rows.map((row) => ({
+      ...row,
+      createdAt: row.createdAt.toISOString(),
+    }))
+  }),
 
   send: protectedProcedure.input(sendInput).mutation(async ({ ctx, input }) => {
     const [owned] = await db
@@ -59,10 +64,21 @@ export const messageRouter = router({
       })
       .returning({
         content: message.content,
+        createdAt: message.createdAt,
         id: message.id,
         role: message.role,
       })
 
-    return created
+    if (!created) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Message could not be created.",
+      })
+    }
+
+    return {
+      ...created,
+      createdAt: created.createdAt.toISOString(),
+    }
   }),
 })
