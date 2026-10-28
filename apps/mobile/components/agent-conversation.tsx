@@ -16,6 +16,17 @@ import { trpc } from "@/utils/trpc"
 
 const StyledIonicons = withUniwind(Ionicons)
 
+const messageTimeFormatter = new Intl.DateTimeFormat(undefined, {
+  hour: "numeric",
+  minute: "2-digit",
+})
+
+function formatMessageTime(value: string): string {
+  const date = new Date(value)
+
+  return Number.isNaN(date.getTime()) ? "" : messageTimeFormatter.format(date)
+}
+
 interface AgentConversationProps {
   agentId: string
 }
@@ -100,6 +111,7 @@ function DeleteAgentPanel({
 
 interface MessageItem {
   content: string
+  createdAt: string
   id: string
 }
 
@@ -125,12 +137,19 @@ function AgentMessageList({ agentName, messages }: AgentMessageListProps) {
   return (
     <View className="gap-2" testID="agent-messages">
       {messages.map((message) => (
-        <View key={message.id} style={{ alignItems: "flex-end" }}>
+        <View
+          className="gap-1"
+          key={message.id}
+          style={{ alignItems: "flex-end" }}
+        >
           <View className="bg-accent px-3 py-2" style={{ maxWidth: "85%" }}>
             <Text className="font-geist-regular text-accent-foreground text-body">
               {message.content}
             </Text>
           </View>
+          <Text className="text-caption text-muted-foreground">
+            {formatMessageTime(message.createdAt)}
+          </Text>
         </View>
       ))}
     </View>
