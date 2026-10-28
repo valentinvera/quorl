@@ -193,6 +193,16 @@ export function AgentConversation({ agentId }: AgentConversationProps) {
                 {agent.description}
               </p>
             ) : null}
+            {agent.instructions ? (
+              <div className="mt-4">
+                <p className="text-caption text-muted-foreground">
+                  Standing instructions
+                </p>
+                <p className="mt-1 whitespace-pre-wrap text-body text-muted-foreground">
+                  {agent.instructions}
+                </p>
+              </div>
+            ) : null}
           </div>
           {isEditing || isDeleting ? null : (
             <div className="flex items-center gap-2">

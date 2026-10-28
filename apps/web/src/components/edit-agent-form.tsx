@@ -8,10 +8,12 @@ import { type ChangeEvent, type FormEvent, useCallback } from "react"
 import { useTRPC } from "@/utils/trpc"
 
 const DESCRIPTION_LIMIT = 280
+const INSTRUCTIONS_LIMIT = 2000
 
 interface EditableAgent {
   description: string | null
   id: string
+  instructions: string | null
   name: string
   role: string
 }
@@ -46,6 +48,7 @@ export function EditAgentForm({
   const form = useForm({
     defaultValues: {
       description: agent.description ?? "",
+      instructions: agent.instructions ?? "",
       name: agent.name,
       role: agent.role,
     },
@@ -53,6 +56,7 @@ export function EditAgentForm({
       mutate({
         description: value.description.trim() || undefined,
         id: agent.id,
+        instructions: value.instructions.trim() || undefined,
         name: value.name,
         role: value.role,
       })
@@ -88,6 +92,13 @@ export function EditAgentForm({
   const handleDescriptionChange = useCallback(
     (event: ChangeEvent<HTMLTextAreaElement>) => {
       form.setFieldValue("description", event.target.value)
+    },
+    [form]
+  )
+
+  const handleInstructionsChange = useCallback(
+    (event: ChangeEvent<HTMLTextAreaElement>) => {
+      form.setFieldValue("instructions", event.target.value)
     },
     [form]
   )
@@ -215,6 +226,43 @@ export function EditAgentForm({
               <p
                 className="text-caption text-destructive-foreground"
                 id="edit-agent-description-error"
+              >
+                {field.state.meta.errors[0]}
+              </p>
+            ) : null}
+          </div>
+        )}
+      </form.Field>
+
+      <form.Field
+        name="instructions"
+        validators={{
+          onSubmit: ({ value }) =>
+            value.length <= INSTRUCTIONS_LIMIT
+              ? undefined
+              : `Use ${INSTRUCTIONS_LIMIT} characters or fewer.`,
+        }}
+      >
+        {(field) => (
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="edit-agent-instructions">Instructions</Label>
+            <Textarea
+              aria-describedby={
+                field.state.meta.errors[0]
+                  ? "edit-agent-instructions-error"
+                  : undefined
+              }
+              aria-invalid={field.state.meta.errors.length > 0}
+              id="edit-agent-instructions"
+              name={field.name}
+              onBlur={field.handleBlur}
+              onChange={handleInstructionsChange}
+              value={field.state.value}
+            />
+            {field.state.meta.errors[0] ? (
+              <p
+                className="text-caption text-destructive-foreground"
+                id="edit-agent-instructions-error"
               >
                 {field.state.meta.errors[0]}
               </p>
