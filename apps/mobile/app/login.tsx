@@ -3,6 +3,7 @@ import { Button, FieldError, Input, Label, TextField } from "heroui-native"
 import { useCallback, useState } from "react"
 import { Text, View } from "react-native"
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller"
+import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { authClient } from "@/lib/auth-client"
 
 type AuthMode = "sign-in" | "sign-up"
@@ -52,6 +53,7 @@ function getSubmitLabel(isSignUp: boolean, isSubmitting: boolean): string {
 
 export default function LoginScreen() {
   const router = useRouter()
+  const insets = useSafeAreaInsets()
   const { data: session, isPending } = authClient.useSession()
   const [mode, setMode] = useState<AuthMode>("sign-in")
   const [name, setName] = useState("")
@@ -135,7 +137,11 @@ export default function LoginScreen() {
     <View className="flex-1 bg-background">
       <KeyboardAwareScrollView
         bottomOffset={24}
-        contentContainerStyle={{ flexGrow: 1 }}
+        contentContainerStyle={{
+          flexGrow: 1,
+          paddingBottom: insets.bottom,
+          paddingTop: insets.top,
+        }}
         keyboardShouldPersistTaps="handled"
       >
         <View className="flex-1 justify-center gap-8 px-6 py-10">
