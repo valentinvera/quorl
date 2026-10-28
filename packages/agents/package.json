@@ -1,0 +1,26 @@
+{
+  "name": "@quorl/agents",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "sideEffects": false,
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs",
+      "default": "./dist/index.mjs"
+    }
+  },
+  "scripts": {
+    "build": "tsdown",
+    "check-types": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@quorl/ts-config": "workspace:*",
+    "tsdown": "^0.22.14",
+    "typescript": "catalog:"
+  }
+}
