@@ -20,6 +20,7 @@ import {
   useRef,
   useState,
 } from "react"
+import { DuplicateAgentButton } from "@/components/duplicate-agent-button"
 import { EditAgentForm } from "@/components/edit-agent-form"
 import { useTRPC } from "@/utils/trpc"
 
@@ -217,6 +218,7 @@ export function AgentConversation({ agentId }: AgentConversationProps) {
           </div>
           {isEditing || isDeleting ? null : (
             <div className="flex items-center gap-2">
+              <DuplicateAgentButton agent={agent} />
               <Button
                 onClick={startEditing}
                 size="sm"
