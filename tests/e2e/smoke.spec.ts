@@ -2,8 +2,9 @@ import { expect, test } from "@playwright/test"
 
 const HEALTH_CHECK_PATH = "/trpc/healthCheck?batch=1&input=%7B%7D"
 const LOGIN_URL_PATTERN = /\/login$/
+const ATLAS_LINK_PATTERN = /Atlas/
 
-test("signs up, creates a teammate, and reaches the API", async ({
+test("signs up, delegates a message, and reaches the API", async ({
   page,
   request,
 }, testInfo) => {
@@ -60,6 +61,23 @@ test("signs up, creates a teammate, and reaches the API", async ({
   await expect(page.getByText("Atlas")).toBeVisible()
   await expect(page.getByText("Research analyst")).toBeVisible()
 
+  await page.getByRole("link", { name: ATLAS_LINK_PATTERN }).click()
+  await expect(
+    page.getByRole("heading", { level: 1, name: "Atlas" })
+  ).toBeVisible()
+  await expect(page.getByText("Give Atlas a task")).toBeVisible()
+
+  await page
+    .getByPlaceholder("Message Atlas...")
+    .fill("Prepare the weekly research brief.")
+  await page.getByRole("button", { name: "Send message" }).click()
+  await expect(
+    page.getByText("Prepare the weekly research brief.")
+  ).toBeVisible()
+
+  await page.getByRole("link", { name: "Teammates" }).click()
+  await expect(page.getByRole("heading", { name: "Teammates" })).toBeVisible()
+
   await page.getByRole("button", { name: "Sign out" }).click()
   await expect(
     page.getByRole("heading", { name: "Sign in to Quorl" })
@@ -69,7 +87,11 @@ test("signs up, creates a teammate, and reaches the API", async ({
   await page.getByLabel("Password").fill("Sup3rSecret!42")
   await page.getByRole("button", { name: "Sign in" }).click()
   await expect(page.getByRole("heading", { name: "Teammates" })).toBeVisible()
-  await expect(page.getByText("Atlas")).toBeVisible()
+
+  await page.getByRole("link", { name: ATLAS_LINK_PATTERN }).click()
+  await expect(
+    page.getByText("Prepare the weekly research brief.")
+  ).toBeVisible()
 
   const response = await request.get(`${apiBaseUrl}${HEALTH_CHECK_PATH}`)
 
