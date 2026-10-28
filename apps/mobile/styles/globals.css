@@ -21,6 +21,18 @@
   color: var(--muted-foreground);
 }
 
+.bg-accent {
+  background-color: var(--accent);
+}
+
+.bg-border {
+  background-color: var(--border);
+}
+
+.text-accent-foreground {
+  color: var(--accent-foreground);
+}
+
 .text-micro {
   font-size: 0.625rem;
   line-height: 0.9375rem;
