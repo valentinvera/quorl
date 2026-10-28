@@ -3,6 +3,7 @@ import { expect, test } from "@playwright/test"
 const HEALTH_CHECK_PATH = "/trpc/healthCheck?batch=1&input=%7B%7D"
 const LOGIN_URL_PATTERN = /\/login$/
 const ATLAS_LINK_PATTERN = /Atlas/
+const RESEARCH_TEMPLATE_PATTERN = /Research analyst/
 
 test("signs up, delegates, edits, deletes the teammate, and reaches the API", async ({
   page,
@@ -49,16 +50,15 @@ test("signs up, delegates, edits, deletes the teammate, and reaches the API", as
   await expect(page.getByRole("heading", { name: "Teammates" })).toBeVisible()
   await expect(page.getByText(email)).toBeVisible()
   await expect(page.getByText("No teammates yet")).toBeVisible()
+  await expect(page.getByText("Start with a template")).toBeVisible()
 
-  await page.getByRole("button", { name: "New teammate" }).click()
+  await page.getByRole("button", { name: RESEARCH_TEMPLATE_PATTERN }).click()
+  await expect(page.getByText("From template: Research analyst")).toBeVisible()
+  await expect(page.getByLabel("Role")).toHaveValue("Research analyst")
+  await expect(page.getByLabel("Instructions")).toHaveValue(
+    "Cite every source. Keep briefs under one page and separate facts from recommendations."
+  )
   await page.getByLabel("Name").fill("Atlas")
-  await page.getByLabel("Role").fill("Research analyst")
-  await page
-    .getByLabel("Description")
-    .fill("Finds sources and prepares the weekly research brief.")
-  await page
-    .getByLabel("Instructions")
-    .fill("Always cite sources and keep briefs under one page.")
   await page.getByRole("button", { name: "Create teammate" }).click()
 
   await expect(page.getByText("Atlas")).toBeVisible()
@@ -70,7 +70,9 @@ test("signs up, delegates, edits, deletes the teammate, and reaches the API", as
   ).toBeVisible()
   await expect(page.getByText("Give Atlas a task")).toBeVisible()
   await expect(
-    page.getByText("Always cite sources and keep briefs under one page.")
+    page.getByText(
+      "Cite every source. Keep briefs under one page and separate facts from recommendations."
+    )
   ).toBeVisible()
 
   await page

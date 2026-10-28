@@ -5,6 +5,7 @@ import { Textarea } from "@quorl/ui/components/textarea"
 import { useForm, useStore } from "@tanstack/react-form"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { type ChangeEvent, type FormEvent, useCallback } from "react"
+import type { AgentTemplate } from "@/lib/agent-templates"
 import { useTRPC } from "@/utils/trpc"
 
 const DESCRIPTION_LIMIT = 280
@@ -13,9 +14,14 @@ const INSTRUCTIONS_LIMIT = 2000
 interface CreateAgentFormProps {
   onCancel: () => void
   onCreated: () => void
+  template?: AgentTemplate
 }
 
-export function CreateAgentForm({ onCancel, onCreated }: CreateAgentFormProps) {
+export function CreateAgentForm({
+  onCancel,
+  onCreated,
+  template,
+}: CreateAgentFormProps) {
   const trpc = useTRPC()
   const queryClient = useQueryClient()
 
@@ -31,10 +37,10 @@ export function CreateAgentForm({ onCancel, onCreated }: CreateAgentFormProps) {
 
   const form = useForm({
     defaultValues: {
-      description: "",
-      instructions: "",
+      description: template?.description ?? "",
+      instructions: template?.instructions ?? "",
       name: "",
-      role: "",
+      role: template?.role ?? "",
     },
     onSubmit: ({ value }) => {
       mutate({
@@ -92,6 +98,12 @@ export function CreateAgentForm({ onCancel, onCreated }: CreateAgentFormProps) {
       noValidate
       onSubmit={handleSubmit}
     >
+      {template ? (
+        <p className="mb-4 text-caption text-muted-foreground">
+          From template: {template.role}
+        </p>
+      ) : null}
+
       <div className="grid gap-4 sm:grid-cols-2">
         <form.Field
           name="name"
