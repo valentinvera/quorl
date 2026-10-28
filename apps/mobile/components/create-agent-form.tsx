@@ -5,6 +5,7 @@ import { Text, View } from "react-native"
 import { trpc } from "@/utils/trpc"
 
 const DESCRIPTION_LIMIT = 280
+const INSTRUCTIONS_LIMIT = 2000
 
 interface CreateAgentFormProps {
   onCancel: () => void
@@ -13,6 +14,7 @@ interface CreateAgentFormProps {
 
 interface FieldErrors {
   description?: string
+  instructions?: string
   name?: string
   role?: string
 }
@@ -20,7 +22,8 @@ interface FieldErrors {
 function validateFields(
   name: string,
   role: string,
-  description: string
+  description: string,
+  instructions: string
 ): FieldErrors {
   const errors: FieldErrors = {}
 
@@ -40,6 +43,10 @@ function validateFields(
     errors.description = `Use ${DESCRIPTION_LIMIT} characters or fewer.`
   }
 
+  if (instructions.length > INSTRUCTIONS_LIMIT) {
+    errors.instructions = `Use ${INSTRUCTIONS_LIMIT} characters or fewer.`
+  }
+
   return errors
 }
 
@@ -48,6 +55,7 @@ export function CreateAgentForm({ onCancel, onCreated }: CreateAgentFormProps) {
   const [name, setName] = useState("")
   const [role, setRole] = useState("")
   const [description, setDescription] = useState("")
+  const [instructions, setInstructions] = useState("")
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({})
 
   const createAgent = useMutation(
@@ -75,8 +83,13 @@ export function CreateAgentForm({ onCancel, onCreated }: CreateAgentFormProps) {
     setFieldErrors((current) => ({ ...current, description: undefined }))
   }, [])
 
+  const handleInstructionsChange = useCallback((value: string) => {
+    setInstructions(value)
+    setFieldErrors((current) => ({ ...current, instructions: undefined }))
+  }, [])
+
   const handleSubmit = useCallback(() => {
-    const nextErrors = validateFields(name, role, description)
+    const nextErrors = validateFields(name, role, description, instructions)
     setFieldErrors(nextErrors)
 
     if (Object.values(nextErrors).some(Boolean)) {
@@ -85,10 +98,11 @@ export function CreateAgentForm({ onCancel, onCreated }: CreateAgentFormProps) {
 
     mutate({
       description: description.trim() || undefined,
+      instructions: instructions.trim() || undefined,
       name: name.trim(),
       role: role.trim(),
     })
-  }, [name, role, description, mutate])
+  }, [name, role, description, instructions, mutate])
 
   return (
     <View className="gap-4 border border-border p-4">
@@ -125,6 +139,20 @@ export function CreateAgentForm({ onCancel, onCreated }: CreateAgentFormProps) {
         />
         {fieldErrors.description ? (
           <FieldError>{fieldErrors.description}</FieldError>
+        ) : null}
+      </TextField>
+
+      <TextField isInvalid={Boolean(fieldErrors.instructions)}>
+        <Label>Instructions</Label>
+        <Input
+          autoCapitalize="sentences"
+          multiline
+          numberOfLines={4}
+          onChangeText={handleInstructionsChange}
+          value={instructions}
+        />
+        {fieldErrors.instructions ? (
+          <FieldError>{fieldErrors.instructions}</FieldError>
         ) : null}
       </TextField>
 

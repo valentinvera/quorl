@@ -11,6 +11,7 @@ import {
 } from "react-native-keyboard-controller"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { withUniwind } from "uniwind"
+import { EditAgentForm } from "@/components/edit-agent-form"
 import { trpc } from "@/utils/trpc"
 
 const StyledIonicons = withUniwind(Ionicons)
@@ -24,6 +25,7 @@ export function AgentConversation({ agentId }: AgentConversationProps) {
   const insets = useSafeAreaInsets()
   const queryClient = useQueryClient()
   const [content, setContent] = useState("")
+  const [isEditing, setIsEditing] = useState(false)
   const scrollRef = useRef<KeyboardAwareScrollViewRef>(null)
 
   const agentQuery = useQuery(trpc.agent.get.queryOptions({ id: agentId }))
@@ -83,6 +85,9 @@ export function AgentConversation({ agentId }: AgentConversationProps) {
   const handleSubmitEditing = useCallback(() => {
     submitMessage()
   }, [submitMessage])
+
+  const startEditing = useCallback(() => setIsEditing(true), [])
+  const stopEditing = useCallback(() => setIsEditing(false), [])
 
   if (agentQuery.error) {
     return (
@@ -149,6 +154,11 @@ export function AgentConversation({ agentId }: AgentConversationProps) {
               {agent.role}
             </Text>
           </View>
+          {isEditing ? null : (
+            <Button onPress={startEditing} size="sm" variant="ghost">
+              <Button.Label>Edit</Button.Label>
+            </Button>
+          )}
         </View>
         <View className="bg-border" style={{ height: 1 }} />
 
@@ -158,31 +168,60 @@ export function AgentConversation({ agentId }: AgentConversationProps) {
           ref={scrollRef}
           style={{ flex: 1 }}
         >
-          {messages.length === 0 ? (
-            <View className="flex-1 items-center justify-center gap-2">
-              <Text className="font-geist-semibold text-foreground text-medium">
-                Give {agentName} a task
-              </Text>
-              <Text className="text-center text-muted-foreground text-small">
-                Describe the outcome you want. Messages stay with this teammate.
-              </Text>
-            </View>
-          ) : (
-            <View className="gap-2" testID="agent-messages">
-              {messages.map((message) => (
-                <View key={message.id} style={{ alignItems: "flex-end" }}>
-                  <View
-                    className="bg-accent px-3 py-2"
-                    style={{ maxWidth: "85%" }}
-                  >
-                    <Text className="font-geist-regular text-accent-foreground text-body">
-                      {message.content}
+          <View className="flex-1 gap-6">
+            {isEditing ? (
+              <EditAgentForm
+                agent={agent}
+                onCancel={stopEditing}
+                onSaved={stopEditing}
+              />
+            ) : (
+              <View className="gap-3">
+                {agent.description ? (
+                  <Text className="text-muted-foreground text-small">
+                    {agent.description}
+                  </Text>
+                ) : null}
+                {agent.instructions ? (
+                  <View className="gap-1">
+                    <Text className="text-caption text-muted-foreground">
+                      Standing instructions
+                    </Text>
+                    <Text className="text-muted-foreground text-small">
+                      {agent.instructions}
                     </Text>
                   </View>
-                </View>
-              ))}
-            </View>
-          )}
+                ) : null}
+              </View>
+            )}
+
+            {messages.length === 0 ? (
+              <View className="flex-1 items-center justify-center gap-2">
+                <Text className="font-geist-semibold text-foreground text-medium">
+                  Give {agentName} a task
+                </Text>
+                <Text className="text-center text-muted-foreground text-small">
+                  Describe the outcome you want. Messages stay with this
+                  teammate.
+                </Text>
+              </View>
+            ) : (
+              <View className="gap-2" testID="agent-messages">
+                {messages.map((message) => (
+                  <View key={message.id} style={{ alignItems: "flex-end" }}>
+                    <View
+                      className="bg-accent px-3 py-2"
+                      style={{ maxWidth: "85%" }}
+                    >
+                      <Text className="font-geist-regular text-accent-foreground text-body">
+                        {message.content}
+                      </Text>
+                    </View>
+                  </View>
+                ))}
+              </View>
+            )}
+          </View>
         </KeyboardAwareScrollView>
 
         <View className="bg-border" style={{ height: 1 }} />
