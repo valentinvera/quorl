@@ -10,17 +10,54 @@ import { useQuery } from "@tanstack/react-query"
 import { Link } from "@tanstack/react-router"
 import { useCallback, useState } from "react"
 import { CreateAgentForm } from "@/components/create-agent-form"
+import { type AgentTemplate, agentTemplates } from "@/lib/agent-templates"
 import { useTRPC } from "@/utils/trpc"
+
+interface TemplateRowProps {
+  onSelect: (template: AgentTemplate) => void
+  template: AgentTemplate
+}
+
+function TemplateRow({ onSelect, template }: TemplateRowProps) {
+  const handleClick = useCallback(() => {
+    onSelect(template)
+  }, [onSelect, template])
+
+  return (
+    <Button
+      className="h-auto w-full flex-col items-start justify-start gap-1 whitespace-normal px-3 py-3 text-left"
+      onClick={handleClick}
+      type="button"
+      variant="ghost"
+    >
+      <span className="font-medium text-medium">{template.role}</span>
+      <span className="text-muted-foreground text-small">
+        {template.description}
+      </span>
+    </Button>
+  )
+}
 
 export function AgentRoster() {
   const trpc = useTRPC()
   const [isCreating, setIsCreating] = useState(false)
+  const [template, setTemplate] = useState<AgentTemplate | null>(null)
 
   const agentsQuery = useQuery(trpc.agent.list.queryOptions())
   const agents = agentsQuery.data
 
-  const openForm = useCallback(() => setIsCreating(true), [])
-  const closeForm = useCallback(() => setIsCreating(false), [])
+  const openForm = useCallback(() => {
+    setTemplate(null)
+    setIsCreating(true)
+  }, [])
+  const openTemplate = useCallback((nextTemplate: AgentTemplate) => {
+    setTemplate(nextTemplate)
+    setIsCreating(true)
+  }, [])
+  const closeForm = useCallback(() => {
+    setTemplate(null)
+    setIsCreating(false)
+  }, [])
 
   return (
     <section>
@@ -41,7 +78,11 @@ export function AgentRoster() {
 
       {isCreating ? (
         <div className="mt-6">
-          <CreateAgentForm onCancel={closeForm} onCreated={closeForm} />
+          <CreateAgentForm
+            onCancel={closeForm}
+            onCreated={closeForm}
+            template={template ?? undefined}
+          />
         </div>
       ) : null}
 
@@ -60,15 +101,34 @@ export function AgentRoster() {
       ) : null}
 
       {agents?.length === 0 ? (
-        <Empty className="mt-8 border-border border-t py-16">
-          <EmptyHeader>
-            <EmptyTitle>No teammates yet</EmptyTitle>
-            <EmptyDescription>
-              Create a teammate with a clear role, then give it work to
-              complete.
-            </EmptyDescription>
-          </EmptyHeader>
-        </Empty>
+        <div className="mt-8">
+          <Empty className="border-border border-t py-12">
+            <EmptyHeader>
+              <EmptyTitle>No teammates yet</EmptyTitle>
+              <EmptyDescription>
+                Create a teammate with a clear role, then give it work to
+                complete.
+              </EmptyDescription>
+            </EmptyHeader>
+          </Empty>
+
+          {isCreating ? null : (
+            <div className="border-border border-t pt-6">
+              <p className="text-caption text-muted-foreground">
+                Start with a template
+              </p>
+              <div className="mt-3 divide-y divide-border border-border border-t">
+                {agentTemplates.map((agentTemplate) => (
+                  <TemplateRow
+                    key={agentTemplate.id}
+                    onSelect={openTemplate}
+                    template={agentTemplate}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
       ) : null}
 
       {agents && agents.length > 0 ? (
