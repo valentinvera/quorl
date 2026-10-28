@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test"
 const HEALTH_CHECK_PATH = "/trpc/healthCheck?batch=1&input=%7B%7D"
 const LOGIN_URL_PATTERN = /\/login$/
 
-test("signs up, reaches the workspace, and reaches the API", async ({
+test("signs up, creates a teammate, and reaches the API", async ({
   page,
   request,
 }, testInfo) => {
@@ -45,10 +45,20 @@ test("signs up, reaches the workspace, and reaches the API", async ({
   await page.getByLabel("Password").fill("Sup3rSecret!42")
   await page.getByRole("button", { name: "Create account" }).click()
 
-  await expect(
-    page.getByRole("heading", { name: "Your workspace" })
-  ).toBeVisible()
+  await expect(page.getByRole("heading", { name: "Teammates" })).toBeVisible()
   await expect(page.getByText(email)).toBeVisible()
+  await expect(page.getByText("No teammates yet")).toBeVisible()
+
+  await page.getByRole("button", { name: "New teammate" }).click()
+  await page.getByLabel("Name").fill("Atlas")
+  await page.getByLabel("Role").fill("Research analyst")
+  await page
+    .getByLabel("Description")
+    .fill("Finds sources and prepares the weekly research brief.")
+  await page.getByRole("button", { name: "Create teammate" }).click()
+
+  await expect(page.getByText("Atlas")).toBeVisible()
+  await expect(page.getByText("Research analyst")).toBeVisible()
 
   await page.getByRole("button", { name: "Sign out" }).click()
   await expect(
@@ -58,9 +68,8 @@ test("signs up, reaches the workspace, and reaches the API", async ({
   await page.getByLabel("Email").fill(email)
   await page.getByLabel("Password").fill("Sup3rSecret!42")
   await page.getByRole("button", { name: "Sign in" }).click()
-  await expect(
-    page.getByRole("heading", { name: "Your workspace" })
-  ).toBeVisible()
+  await expect(page.getByRole("heading", { name: "Teammates" })).toBeVisible()
+  await expect(page.getByText("Atlas")).toBeVisible()
 
   const response = await request.get(`${apiBaseUrl}${HEALTH_CHECK_PATH}`)
 
