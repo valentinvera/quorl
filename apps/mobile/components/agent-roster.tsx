@@ -1,9 +1,50 @@
 import { useQuery } from "@tanstack/react-query"
+import { useRouter } from "expo-router"
 import { Button } from "heroui-native"
 import { useCallback, useState } from "react"
-import { Text, View } from "react-native"
+import { Pressable, Text, View } from "react-native"
 import { CreateAgentForm } from "@/components/create-agent-form"
 import { trpc } from "@/utils/trpc"
+
+interface AgentRowProps {
+  agent: {
+    description: string | null
+    id: string
+    name: string
+    role: string
+  }
+}
+
+function AgentRow({ agent }: AgentRowProps) {
+  const router = useRouter()
+
+  const handlePress = useCallback(() => {
+    router.push({
+      params: { agentId: agent.id },
+      pathname: "/agents/[agentId]",
+    })
+  }, [router, agent.id])
+
+  return (
+    <Pressable
+      accessibilityRole="button"
+      className="gap-1 py-4"
+      onPress={handlePress}
+    >
+      <View className="flex-row items-baseline justify-between gap-4">
+        <Text className="font-geist-semibold text-foreground text-medium">
+          {agent.name}
+        </Text>
+        <Text className="text-caption text-muted-foreground">{agent.role}</Text>
+      </View>
+      {agent.description ? (
+        <Text className="text-muted-foreground text-small">
+          {agent.description}
+        </Text>
+      ) : null}
+    </Pressable>
+  )
+}
 
 export function AgentRoster() {
   const [isCreating, setIsCreating] = useState(false)
@@ -68,21 +109,7 @@ export function AgentRoster() {
           {agents.map((agent) => (
             <View key={agent.id}>
               <View className="bg-border" style={{ height: 1 }} />
-              <View className="gap-1 py-4">
-                <View className="flex-row items-baseline justify-between gap-4">
-                  <Text className="font-geist-semibold text-foreground text-medium">
-                    {agent.name}
-                  </Text>
-                  <Text className="text-caption text-muted-foreground">
-                    {agent.role}
-                  </Text>
-                </View>
-                {agent.description ? (
-                  <Text className="text-muted-foreground text-small">
-                    {agent.description}
-                  </Text>
-                ) : null}
-              </View>
+              <AgentRow agent={agent} />
             </View>
           ))}
         </View>
