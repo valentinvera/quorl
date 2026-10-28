@@ -1,4 +1,122 @@
+/* biome-ignore-all lint/suspicious/noDuplicateCustomProperties: Uniwind theme variants intentionally define the same token names for light and dark themes. */
+
 @import "tailwindcss";
-@import "@quorl/tokens/uniwind.css";
 @import "heroui-native/styles";
+@import "@quorl/tokens/uniwind.css";
 @import "uniwind";
+
+@theme {
+  --field-radius: 0px;
+  --radius-3xl: 0px;
+  --radius-4xl: 0px;
+}
+
+/* Uniwind does not generate utilities from the imported Quorl theme, so the
+   shared type scale and text colors are declared here as plain classes. */
+.text-destructive-foreground {
+  color: var(--destructive-foreground);
+}
+
+.text-muted-foreground {
+  color: var(--muted-foreground);
+}
+
+.text-micro {
+  font-size: 0.625rem;
+  line-height: 0.9375rem;
+}
+
+.text-compact {
+  font-size: 0.6875rem;
+  line-height: 0.9625rem;
+}
+
+.text-caption {
+  font-size: 0.75rem;
+  line-height: 1.05rem;
+}
+
+.text-small {
+  font-size: 0.8125rem;
+  line-height: 1.21875rem;
+}
+
+.text-medium {
+  font-size: 0.875rem;
+  line-height: 1.3125rem;
+}
+
+.text-body {
+  font-size: 1rem;
+  line-height: 1.5rem;
+}
+
+.text-large {
+  font-size: 0.9375rem;
+  line-height: 1.5rem;
+}
+
+.text-emphasis {
+  font-size: 1.0625rem;
+  line-height: 1.7rem;
+}
+
+.text-section {
+  font-size: 1.5rem;
+  line-height: 1.995rem;
+}
+
+.text-subtitle {
+  font-size: 2rem;
+  line-height: 2.25rem;
+}
+
+:root {
+  @variant light {
+    --accent: #000000;
+    --accent-foreground: #ffffff;
+    --border: rgba(0, 0, 0, 0.12);
+    --color-accent-hover: #1a1a1a;
+    --color-danger-hover: #b0102b;
+    --color-danger-soft-hover: #f0c4c8;
+    --color-default-hover: #e6e6e8;
+    --color-field-border-focus: #005bbd;
+    --color-field-border-hover: #d4d4d8;
+    --color-field-focus: #ffffff;
+    --color-field-hover: #fafafa;
+    --danger: #c91433;
+    --danger-foreground: #c91433;
+    --default: #f4f4f5;
+    --default-foreground: #000000;
+    --field-background: #ffffff;
+    --field-border: rgba(0, 0, 0, 0.16);
+    --field-border-width: 1px;
+    --field-foreground: #000000;
+    --field-placeholder: #5f6269;
+    --muted-foreground: #5f6269;
+  }
+
+  @variant dark {
+    --accent: #ffffff;
+    --accent-foreground: #000000;
+    --border: rgba(255, 255, 255, 0.1);
+    --color-accent-hover: #e6e6e6;
+    --color-danger-hover: #ff7a86;
+    --color-danger-soft-hover: #2a1a1d;
+    --color-default-hover: #1d1f23;
+    --color-field-border-focus: #70b8ff;
+    --color-field-border-hover: #2a2c30;
+    --color-field-focus: #16171a;
+    --color-field-hover: #1a1c20;
+    --danger: #ff9592;
+    --danger-foreground: #ff9592;
+    --default: #16171a;
+    --default-foreground: #ffffff;
+    --field-background: #16171a;
+    --field-border: rgba(255, 255, 255, 0.15);
+    --field-border-width: 1px;
+    --field-foreground: #ffffff;
+    --field-placeholder: #a1a6ad;
+    --muted-foreground: #a1a6ad;
+  }
+}
