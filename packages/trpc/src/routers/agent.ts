@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto"
 import { db } from "@quorl/db"
 import { agent } from "@quorl/db/schema/agent"
-import { desc, eq } from "drizzle-orm"
+import { and, desc, eq } from "drizzle-orm"
 import { z } from "zod"
 import { protectedProcedure, router } from "../index"
 
@@ -32,6 +32,25 @@ export const agentRouter = router({
         })
 
       return created
+    }),
+
+  get: protectedProcedure
+    .input(z.object({ id: z.string().min(1) }))
+    .query(async ({ ctx, input }) => {
+      const [found] = await db
+        .select({
+          description: agent.description,
+          id: agent.id,
+          name: agent.name,
+          role: agent.role,
+        })
+        .from(agent)
+        .where(
+          and(eq(agent.id, input.id), eq(agent.userId, ctx.session.user.id))
+        )
+        .limit(1)
+
+      return found ?? null
     }),
 
   list: protectedProcedure.query(
