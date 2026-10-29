@@ -82,6 +82,7 @@ test("signs up, delegates, edits, duplicates, deletes teammates, and reaches the
   await expect(
     page.getByText("Prepare the weekly research brief.")
   ).toBeVisible()
+  await expect(page.getByText("Today")).toBeVisible()
 
   await page.getByRole("button", { name: "Edit" }).click()
   await page.getByLabel("Name").fill("Atlas Prime")
