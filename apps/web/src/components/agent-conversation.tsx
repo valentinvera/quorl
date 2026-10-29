@@ -6,6 +6,7 @@ import {
   EmptyHeader,
   EmptyTitle,
 } from "@quorl/ui/components/empty"
+import { Marker, MarkerContent } from "@quorl/ui/components/marker"
 import { Message, MessageContent } from "@quorl/ui/components/message"
 import { Textarea } from "@quorl/ui/components/textarea"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
@@ -14,6 +15,7 @@ import { ArrowLeftIcon, SendIcon } from "lucide-react"
 import {
   type ChangeEvent,
   type FormEvent,
+  Fragment,
   type KeyboardEvent,
   useCallback,
   useEffect,
@@ -35,6 +37,40 @@ function formatMessageTime(value: string): string {
   const date = new Date(value)
 
   return Number.isNaN(date.getTime()) ? "" : messageTimeFormatter.format(date)
+}
+
+const DAY_IN_MS = 86_400_000
+
+function getStartOfDay(date: Date): Date {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate())
+}
+
+function getDayKey(value: string): string {
+  const date = new Date(value)
+
+  return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`
+}
+
+function formatDayLabel(value: string): string {
+  const date = new Date(value)
+  const today = getStartOfDay(new Date())
+  const target = getStartOfDay(date)
+  const difference = Math.round(
+    (today.getTime() - target.getTime()) / DAY_IN_MS
+  )
+
+  if (difference === 0) {
+    return "Today"
+  }
+
+  if (difference === 1) {
+    return "Yesterday"
+  }
+
+  return new Intl.DateTimeFormat(undefined, {
+    day: "numeric",
+    month: "short",
+  }).format(date)
 }
 
 interface AgentConversationProps {
@@ -297,23 +333,40 @@ export function AgentConversation({ agentId }: AgentConversationProps) {
           </Empty>
         ) : (
           <div className="flex flex-col gap-3">
-            {messages.map((message) => (
-              <Message align="end" key={message.id}>
-                <MessageContent>
-                  <Bubble align="end">
-                    <BubbleContent className="whitespace-pre-wrap">
-                      {message.content}
-                    </BubbleContent>
-                  </Bubble>
-                  <time
-                    className="self-end text-caption text-muted-foreground"
-                    dateTime={message.createdAt}
-                  >
-                    {formatMessageTime(message.createdAt)}
-                  </time>
-                </MessageContent>
-              </Message>
-            ))}
+            {messages.map((message, index) => {
+              const previousMessage = messages[index - 1]
+              const showDaySeparator =
+                !previousMessage ||
+                getDayKey(previousMessage.createdAt) !==
+                  getDayKey(message.createdAt)
+
+              return (
+                <Fragment key={message.id}>
+                  {showDaySeparator ? (
+                    <Marker variant="separator">
+                      <MarkerContent>
+                        {formatDayLabel(message.createdAt)}
+                      </MarkerContent>
+                    </Marker>
+                  ) : null}
+                  <Message align="end">
+                    <MessageContent>
+                      <Bubble align="end">
+                        <BubbleContent className="whitespace-pre-wrap">
+                          {message.content}
+                        </BubbleContent>
+                      </Bubble>
+                      <time
+                        className="self-end text-caption text-muted-foreground"
+                        dateTime={message.createdAt}
+                      >
+                        {formatMessageTime(message.createdAt)}
+                      </time>
+                    </MessageContent>
+                  </Message>
+                </Fragment>
+              )
+            })}
             <div ref={messagesEndRef} />
           </div>
         )}
