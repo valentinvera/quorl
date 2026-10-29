@@ -18,6 +18,7 @@ import {
 } from "react-native-keyboard-controller"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { withUniwind } from "uniwind"
+import { DuplicateAgentButton } from "@/components/duplicate-agent-button"
 import { EditAgentForm } from "@/components/edit-agent-form"
 import { trpc } from "@/utils/trpc"
 
@@ -75,8 +76,10 @@ interface AgentConversationProps {
 interface AgentProfileViewProps {
   agent: {
     description: string | null
+    id: string
     instructions: string | null
     name: string
+    role: string
   }
   onDelete: () => void
 }
@@ -99,11 +102,14 @@ function AgentProfileView({ agent, onDelete }: AgentProfileViewProps) {
           </Text>
         </View>
       ) : null}
-      <Button onPress={onDelete} size="sm" variant="ghost">
-        <Button.Label className="text-destructive-foreground">
-          Delete teammate
-        </Button.Label>
-      </Button>
+      <View className="gap-2">
+        <DuplicateAgentButton agent={agent} />
+        <Button onPress={onDelete} size="sm" variant="ghost">
+          <Button.Label className="text-destructive-foreground">
+            Delete teammate
+          </Button.Label>
+        </Button>
+      </View>
     </View>
   )
 }
