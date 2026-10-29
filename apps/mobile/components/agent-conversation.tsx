@@ -2,7 +2,14 @@ import { Ionicons } from "@expo/vector-icons"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useRouter } from "expo-router"
 import { Button, Input } from "heroui-native"
-import { type ReactNode, useCallback, useEffect, useRef, useState } from "react"
+import {
+  Fragment,
+  type ReactNode,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react"
 import { Pressable, Text, View } from "react-native"
 import {
   KeyboardAvoidingView,
@@ -25,6 +32,40 @@ function formatMessageTime(value: string): string {
   const date = new Date(value)
 
   return Number.isNaN(date.getTime()) ? "" : messageTimeFormatter.format(date)
+}
+
+const DAY_IN_MS = 86_400_000
+
+function getStartOfDay(date: Date): Date {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate())
+}
+
+function getDayKey(value: string): string {
+  const date = new Date(value)
+
+  return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`
+}
+
+function formatDayLabel(value: string): string {
+  const date = new Date(value)
+  const today = getStartOfDay(new Date())
+  const target = getStartOfDay(date)
+  const difference = Math.round(
+    (today.getTime() - target.getTime()) / DAY_IN_MS
+  )
+
+  if (difference === 0) {
+    return "Today"
+  }
+
+  if (difference === 1) {
+    return "Yesterday"
+  }
+
+  return new Intl.DateTimeFormat(undefined, {
+    day: "numeric",
+    month: "short",
+  }).format(date)
 }
 
 interface AgentConversationProps {
@@ -136,22 +177,36 @@ function AgentMessageList({ agentName, messages }: AgentMessageListProps) {
 
   return (
     <View className="gap-2" testID="agent-messages">
-      {messages.map((message) => (
-        <View
-          className="gap-1"
-          key={message.id}
-          style={{ alignItems: "flex-end" }}
-        >
-          <View className="bg-accent px-3 py-2" style={{ maxWidth: "85%" }}>
-            <Text className="font-geist-regular text-accent-foreground text-body">
-              {message.content}
-            </Text>
-          </View>
-          <Text className="text-caption text-muted-foreground">
-            {formatMessageTime(message.createdAt)}
-          </Text>
-        </View>
-      ))}
+      {messages.map((message, index) => {
+        const previousMessage = messages[index - 1]
+        const showDaySeparator =
+          !previousMessage ||
+          getDayKey(previousMessage.createdAt) !== getDayKey(message.createdAt)
+
+        return (
+          <Fragment key={message.id}>
+            {showDaySeparator ? (
+              <View className="flex-row items-center gap-2 py-2">
+                <View className="flex-1 bg-border" style={{ height: 1 }} />
+                <Text className="text-caption text-muted-foreground">
+                  {formatDayLabel(message.createdAt)}
+                </Text>
+                <View className="flex-1 bg-border" style={{ height: 1 }} />
+              </View>
+            ) : null}
+            <View className="gap-1" style={{ alignItems: "flex-end" }}>
+              <View className="bg-accent px-3 py-2" style={{ maxWidth: "85%" }}>
+                <Text className="font-geist-regular text-accent-foreground text-body">
+                  {message.content}
+                </Text>
+              </View>
+              <Text className="text-caption text-muted-foreground">
+                {formatMessageTime(message.createdAt)}
+              </Text>
+            </View>
+          </Fragment>
+        )
+      })}
     </View>
   )
 }
