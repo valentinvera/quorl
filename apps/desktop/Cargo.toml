@@ -7,3 +7,4 @@ publish = false
 [dependencies]
 gpui = "0.2.2"
 gpui-component = "0.5.1"
+ureq = "2"
